@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,14 +21,24 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-b2acmovhe2rd%vb4myzdhfrqdctqcyk4k60h)6ufk(z*ihi#27'
+SECRET_KEY = config('SECRET_KEY', default='django-insecure-b2acmovhe2rd%vb4myzdhfrqdctqcyk4k60h)6ufk(z*ihi#27')
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG', default=True, cast=bool)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='127.0.0.1,localhost').split(',')
 
+#email settings for development
+EMAIL_BACKEND = config('EMAIL_BACKEND', default='django.core.mail.backends.console.EmailBackend')
+EMAIL_HOST = config('EMAIL_HOST', default='') # Not strictly needed for console backend
+EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int) # Not strictly needed for console backend
+EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool) # Not strictly needed for console backend
+EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='') # Not strictly needed for console backend
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='') # Not strictly needed for console backend
 
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER # Or set a specific default 'from' email if you like
+SERVER_EMAIL = EMAIL_HOST_USER # For error reports from Django itself
 # Application definition
 
 INSTALLED_APPS = [

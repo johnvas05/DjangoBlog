@@ -1,0 +1,22 @@
+
+{% if form.errors %}
+    <div style="color: red;">
+        <p>Please correct the following errors:</p>
+        <ul>
+            {% for field in form %}
+                {% if field.errors %}
+                    <li>{{ field.label }}: {{ field.errors }}</li>
+                {% endif %}
+            {% endfor %}
+            {% if form.non_field_errors %}
+                <li>{{ form.non_field_errors }}</li>
+            {% endif %}
+        </ul>
+    </div>
+{% endif %}
+
+<form action="{% url 'blog:post_comment' post.id %}" method="post">
+    {% csrf_token %}
+    {{ form.as_p }} {# Render form fields as paragraphs #}
+    <p><input type="submit" value="Add comment"></p>
+</form>

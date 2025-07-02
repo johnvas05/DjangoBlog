@@ -1,9 +1,13 @@
 from django.shortcuts import render, get_object_or_404
-from .models import Post
+from .models import Post, Comment # Ensure Comment is imported
+from .forms import EmailPostForm, CommentForm # Ensure CommentForm is imported
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from .forms import EmailPostForm
 from django.core.mail import send_mail
 from django.conf import settings
+from django.views.decorators.http import require_POST
+from django.shortcuts import redirect # Add this import for redirect
+
+
 def post_list(request):
     object_list = Post.objects.filter(status=Post.Status.PUBLISHED) # Get all published posts
 
@@ -30,9 +34,39 @@ def post_detail(request, year, month, day, post):
         publish__month=month,
         publish__day=day,
         slug=post,
-        status=Post.Status.PUBLISHED
+        status=Post.Status.PUBLISHED # <--- CHANGE THIS LINE!
     )
-    return render(request, template_name='blog/post/detail.html', context={'post': post})
+    # List of active comments for this post
+    comments = post.comments.filter(active=True)
+
+    # Form for users to comment
+    form = CommentForm()  # Initialize an empty form for GET requests
+
+    return render(request,
+                  'blog/post/detail.html',
+                  {'post': post,
+                   'comments': comments,  # Pass comments to the template
+                   'form': form})  # Pass the comment form to the template
+
+
+# This view is for handling comment submission (using require_POST for safety)
+@require_POST  # This decorator ensures the view only accepts POST requests
+def post_comment(request, post_id):
+    post = get_object_or_404(Post, id=post_id, status=Post.Status.PUBLISHED)
+    comment = None  # Initialize comment to None
+    form = CommentForm(data=request.POST)  # Bind submitted data to the form
+
+    if form.is_valid():
+        # Create a Comment object but don't save it yet
+        comment = form.save(commit=False)
+        # Assign the current post to the comment
+        comment.post = post
+        # Save the comment to the database
+        comment.save()
+
+    # Redirect to the post detail page after successful comment
+    return redirect(post.get_absolute_url())
+
 
 def post_share(request, post_id):
     # Retrieve post by id

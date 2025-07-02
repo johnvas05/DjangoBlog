@@ -3,12 +3,39 @@
 {% block title %}{{ post.title }}{% endblock %}
 
 {% block content %}
-    <h2>{{ post.title }}</h2>
-    <p>{{ post.publish }} by {{ post.author }}</p>
-    <p>{{ post.body }}</p>
+    <h1>{{ post.title }}</h1>
+    <p class="date">
+        Published {{ post.publish|date:"F d, Y" }} by {{ post.author }}
+    </p>
+    {{ post.body|linebreaks }}
+
     <p class="post-share">
-    <a href="{% url 'blog:post_share' post.id %}">
-        Share this post by email!
-    </a>
-</p>
+        <a href="{% url 'blog:post_share' post.id %}">
+            Share this post by email
+        </a>
+    </p>
+
+    <h2>Comments</h2>
+    {% with comments.count as total_comments %}
+        <h3>
+            {{ total_comments }} comment{{ total_comments|pluralize }}
+        </h3>
+    {% endwith %}
+
+    {% for comment in comments %}
+        <div class="comment">
+            <p class="info">
+                Comment by {{ comment.name }}
+                {{ comment.created|date:"M d, Y" }}
+            </p>
+            {{ comment.body|linebreaks }}
+        </div>
+    {% empty %}
+        <p>There are no comments yet.</p>
+    {% endfor %}
+
+    <h3>Add a new comment</h3>
+    {# Include the comment form template #}
+    {% include 'blog/post/comment_form.html' with form=form post=post %}
+
 {% endblock %}
