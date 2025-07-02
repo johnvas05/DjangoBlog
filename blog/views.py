@@ -6,13 +6,17 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.views.decorators.http import require_POST
 from django.shortcuts import redirect # Add this import for redirect
+from taggit.models import Tag
 
+def post_list(request, tag_slug=None):
+    object_list = Post.objects.filter(status=Post.Status.PUBLISHED)
+    tag = None
+    if tag_slug:
+        tag = get_object_or_404(Tag, slug=tag_slug)
+        object_list = object_list.filter(tags__in=[tag])
 
-def post_list(request):
-    object_list = Post.objects.filter(status=Post.Status.PUBLISHED) # Get all published posts
-
-    paginator = Paginator(object_list, 3) # 3 posts per page (you can change this number)
-    page_number = request.GET.get('page', 1) # Get the current page number from the URL query parameter 'page'
+    paginator = Paginator(object_list, 3)
+    page_number = request.GET.get('page', 1)
 
     try:
         posts = paginator.page(page_number) # Get the Page object for the requested page
@@ -25,7 +29,9 @@ def post_list(request):
 
     return render(request,
                   template_name='blog/post/list.html', # Note the path 'blog/post/list.html'
-                  context={'posts': posts, 'page_obj': posts}) # Pass the Page object to the template
+                  context={'posts': posts,
+                           'page_obj': posts,
+                           'tag': tag})
 
 def post_detail(request, year, month, day, post):
     post = get_object_or_404(
