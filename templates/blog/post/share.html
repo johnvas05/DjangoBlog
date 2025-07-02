@@ -1,0 +1,19 @@
+{% extends "blog/base.html" %}
+
+{% block title %}Share Post{% endblock %}
+
+{% block content %}
+    <h1>Share "{{ post.title }}" by email</h1>
+
+    {% if sent %}
+        <p>
+            Email successfully sent!
+        </p>
+    {% else %}
+        <form method="post">
+            {% csrf_token %} {# Django's security token for forms #}
+            {{ form.as_p }} {# Renders form fields as paragraphs #}
+            <input type="submit" value="Send e-mail">
+        </form>
+    {% endif %}
+{% endblock %}

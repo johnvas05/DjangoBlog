@@ -6,4 +6,9 @@
     <h2>{{ post.title }}</h2>
     <p>{{ post.publish }} by {{ post.author }}</p>
     <p>{{ post.body }}</p>
+    <p class="post-share">
+    <a href="{% url 'blog:post_share' post.id %}">
+        Share this post by email!
+    </a>
+</p>
 {% endblock %}
