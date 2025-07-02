@@ -15,6 +15,16 @@
         </a>
     </p>
 
+    {# Display tags #}
+    {% if post.tags.all %}
+        <p>
+            Tags:
+            {% for tag in post.tags.all %}
+                <a href="{% url 'blog:post_list_by_tag' tag.slug %}">{{ tag.name }}</a>{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+        </p>
+    {% endif %}
+
     <h2>Comments</h2>
     {% with comments.count as total_comments %}
         <h3>
@@ -35,7 +45,6 @@
     {% endfor %}
 
     <h3>Add a new comment</h3>
-    {# Include the comment form template #}
     {% include 'blog/post/comment_form.html' with form=form post=post %}
 
 {% endblock %}

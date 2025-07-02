@@ -2,6 +2,7 @@ from django.db import models
 from django.conf import settings
 from django.utils import timezone
 from django.urls import reverse
+from taggit.managers import TaggableManager
 
 class Post(models.Model):
     class Status(models.TextChoices):
@@ -16,7 +17,7 @@ class Post(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     status = models.CharField(max_length=2, choices=Status.choices, default=Status.DRAFT)
-
+    tags = TaggableManager()  # Allows tagging of posts
     class Meta:
         ordering = ['-publish']
 
