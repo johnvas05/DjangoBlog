@@ -1,9 +1,15 @@
-from django.urls import path, include # Make sure 'include' is imported
-from . import views # You might add custom views later, but for now, we're mostly including Django's auth views
+# myblog/account/urls.py
+from django.urls import path
+from django.contrib.auth import views as auth_views # Import Django's auth views
+from . import views # Import your custom views from myblog/account/views.py
 
-app_name = 'account' # It's a good practice to define an app_name for namespacing
+app_name = 'account' # Define namespace for account app
 
 urlpatterns = [
-    # Django authentication URLs
-    path("", include("django.contrib.auth.urls")),
+    # Custom Dashboard (e.g., http://127.0.0.1:8000/account/)
+    path('', views.dashboard, name='dashboard'),
+
+    # Explicit Logout (e.g., http://127.0.0.1:8000/account/logout/)
+    # This renders 'registration/logged_out.html' after a successful POST request
+    path('logout/', auth_views.LogoutView.as_view(template_name='registration/logged_out.html'), name='logout'),
 ]

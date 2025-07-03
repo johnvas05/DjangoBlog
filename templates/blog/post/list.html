@@ -1,33 +1,26 @@
-{% extends "blog/base.html" %}
+
+
+{% extends "base.html" %}
 
 {% block title %}All Posts{% endblock %}
 
 {% block content %}
-    <h2>All Posts</h2>
-
+    <h1>All Posts</h1>
     {% for post in posts %}
         <h3>
-            {# Use post.get_absolute_url for cleaner URLs #}
             <a href="{{ post.get_absolute_url }}">
                 {{ post.title }}
             </a>
         </h3>
         <p class="date">
-            {# Format the date nicely #}
-            Published {{ post.publish|date:"F d, Y" }} by {{ post.author }}
+            Published {{ post.publish }} by {{ post.author }}
         </p>
-        {# Display a truncated version of the body. Use |linebreaks to preserve newlines from textfield #}
-        {{ post.body|truncatewords_html:30|linebreaks }}
-        <p>
-            {# Optionally add a "Read more" link #}
-            <a href="{{ post.get_absolute_url }}">Read more</a>
-        </p>
-        <hr> {# Add a horizontal rule to separate posts for better readability #}
+        {{ post.body|truncatewords:30|linebreaks }}
     {% empty %}
         <p>No posts found.</p>
     {% endfor %}
 
-    {# Include the pagination template here. Make sure the path is correct. #}
-    {% include 'blog/pagination.html' with page_obj=posts %}
+    {# Include the pagination template here #}
+    {% include "blog/pagination.html" with page_obj=posts %} {# Make sure to pass page_obj as 'posts' #}
 
 {% endblock %}
