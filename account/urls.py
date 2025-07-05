@@ -12,4 +12,6 @@ urlpatterns = [
     # Explicit Logout (e.g., http://127.0.0.1:8000/account/logout/)
     # This renders 'registration/logged_out.html' after a successful POST request
     path('logout/', auth_views.LogoutView.as_view(template_name='registration/logged_out.html'), name='logout'),
+    path("register/", views.register, name="register"),
+
 ]
