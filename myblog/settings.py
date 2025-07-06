@@ -48,9 +48,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'account.apps.AccountConfig',
     'blog.apps.BlogConfig',
     'taggit',
+    'account',
 ]
 
 MIDDLEWARE = [
@@ -82,6 +82,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'myblog.wsgi.application'
 
+LOGIN_REDIRECT_URL = '/account/'  # Redirect to dashboard after login
+LOGIN_URL = '/account/login/'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases

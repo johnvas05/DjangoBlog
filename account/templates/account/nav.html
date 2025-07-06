@@ -1,0 +1,10 @@
+
+<nav>
+    <a href="{% url 'account:dashboard' %}">Dashboard</a> |
+    <a href="{% url 'account:login' %}">Login</a> |
+    <form action="{% url 'account:logout' %}" method="post" >
+  {% csrf_token %}
+  <button type="submit">Logout</button>
+</form>
+</nav>
+<hr>

@@ -1,26 +1,21 @@
+<h1>All Posts</h1>
 
+{% if user.is_authenticated %}
+  <p>Welcome, {{ user.username }}!</p>
+  <form method="post" action="/{% url 'account:logout' %}" style="display:inline;">
+    {% csrf_token %}
+    <button type="submit">Logout</button>
+</form>
+{% else %}
+  <a href="{% url 'account:login' %}">Login</a>
+{% endif %}
 
-{% extends "base.html" %}
-
-{% block title %}All Posts{% endblock %}
-
-{% block content %}
-    <h1>All Posts</h1>
-    {% for post in posts %}
-        <h3>
-            <a href="{{ post.get_absolute_url }}">
-                {{ post.title }}
-            </a>
-        </h3>
-        <p class="date">
-            Published {{ post.publish }} by {{ post.author }}
-        </p>
-        {{ post.body|truncatewords:30|linebreaks }}
-    {% empty %}
-        <p>No posts found.</p>
-    {% endfor %}
-
-    {# Include the pagination template here #}
-    {% include "blog/pagination.html" with page_obj=posts %} {# Make sure to pass page_obj as 'posts' #}
-
-{% endblock %}
+{% for post in posts %}
+  <h2>
+    <a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+  </h2>
+  <p class="date">
+    Published {{ post.publish|date:"F j, Y, g:i a" }} by {{ post.author }}
+  </p>
+  {{ post.body|linebreaks }}
+{% endfor %}

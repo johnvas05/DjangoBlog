@@ -1,19 +1,15 @@
-{% include "account/nav.html" %}
-
 {% extends "base.html" %}
 
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
-    <h1>Dashboard</h1>
-    <p>Welcome to your dashboard, {{ request.user.username }}!</p>
+  {% include "account/nav.html" %}
 
-    <h2>Account Options:</h2>
-    <ul>
-        <li><a href="{% url 'password_change' %}">Change your password</a></li>
-        <li><a href="{% url 'logout' %}">Log out</a></li>
+  <h1>Dashboard</h1>
+  <p>Welcome to your dashboard, {{ request.user.username }}!</p>
 
-    </ul>
-
-    {# You might add more links here for custom profile editing, etc. #}
+  <h2>Account Options:</h2>
+  <ul>
+    <li><a href="{% url 'account:password_change' %}">Change your password</a></li>
+  </ul>
 {% endblock %}
