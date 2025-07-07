@@ -10,4 +10,4 @@ class EmailPostForm(forms.Form):
 class CommentForm(forms.ModelForm): # Add this new form
     class Meta:
         model = Comment
-        fields = ['name', 'email', 'body'] # Specify fields you want to include in the form
+        fields = ['name', 'email', 'body'] # Specify fields to include in the form

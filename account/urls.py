@@ -45,7 +45,7 @@ urlpatterns = [
     # —– the rest of Django’s auth URLs (reset, etc.) —–
     path('', include('django.contrib.auth.urls')),
 
-    # —– your own views —–
+    # —– custom views —–
     path('', views.dashboard, name='dashboard'),
     path('register/', views.register, name='register'),
 ]

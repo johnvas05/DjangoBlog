@@ -16,7 +16,7 @@ def register(request):
     return render(request, 'account/register.html', {'form': form})
 
 
-@login_required # This decorator ensures only logged-in users can access this page
+@login_required #ensures only logged-in users can access this page
 def dashboard(request):
     return render(request, 'account/dashboard.html', {'section': 'dashboard'})
 

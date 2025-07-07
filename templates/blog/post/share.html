@@ -11,7 +11,7 @@
         </p>
     {% else %}
         <form method="post">
-            {% csrf_token %} {# Django's security token for forms #}
+            {% csrf_token %} 
             {{ form.as_p }} {# Renders form fields as paragraphs #}
             <input type="submit" value="Send e-mail">
         </form>
