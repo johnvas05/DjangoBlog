@@ -2,15 +2,14 @@
 from django.urls import path, include, reverse_lazy
 from django.contrib.auth.views import (
     LoginView,
-    LogoutView,
-    PasswordChangeView,
-    PasswordChangeDoneView,
+
 )
 from . import views
 from .views import (
     CustomLogoutView,
     CustomPasswordChangeView,
     CustomPasswordChangeDoneView,
+    CustomPasswordResetView,
 )
 
 app_name = 'account'
@@ -41,6 +40,12 @@ urlpatterns = [
         CustomPasswordChangeDoneView.as_view(),
         name='password_change_done'
     ),
+
+    path(
+        'password_reset/',
+        CustomPasswordResetView.as_view(),
+        name='password_reset'
+    ),  # This includes the default password reset URLs)
 
     # —– the rest of Django’s auth URLs (reset, etc.) —–
     path('', include('django.contrib.auth.urls')),
