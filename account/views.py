@@ -5,6 +5,14 @@ from django.contrib import messages
 from django.urls import reverse_lazy
 from django.contrib.auth.views import LogoutView
 from django.contrib.auth.views import PasswordChangeView, PasswordChangeDoneView, PasswordResetView
+from django.urls import reverse_lazy
+from django.contrib.auth.views import (
+    PasswordResetView,
+    PasswordResetDoneView,
+    PasswordResetConfirmView,
+    PasswordResetCompleteView,
+)
+from django.contrib import messages
 def register(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
@@ -35,12 +43,31 @@ class CustomPasswordChangeView(PasswordChangeView):
 class CustomPasswordChangeDoneView(PasswordChangeDoneView):
     template_name = 'register/password_change_done.html'
 
-class CustomPasswordResetView(PasswordResetView):
-    template_name = 'register/password_reset_form.html'
-    email_template_name = 'register/password_reset_email.html'
 
-    success_url = reverse_lazy('account:password_reset_done')
+
+
+class CustomPasswordResetView(PasswordResetView):
+    template_name            = 'register/password_reset_form.html'
+    email_template_name      = 'register/password_reset_email.html'
+    success_url              = reverse_lazy('account:password_reset_done')
+
+    def get_subject(self):
+
+        return "[My Blog] Reset your password"
 
     def form_valid(self, form):
         messages.success(self.request, "Password reset email sent!")
         return super().form_valid(form)
+
+
+class CustomPasswordResetDoneView(PasswordResetDoneView):
+    template_name = 'register/password_reset_done.html'
+
+
+class CustomPasswordResetConfirmView(PasswordResetConfirmView):
+    template_name = 'register/password_reset_confirm.html'
+    success_url   = reverse_lazy('account:password_reset_complete')
+
+
+class CustomPasswordResetCompleteView(PasswordResetCompleteView):
+    template_name = 'register/password_reset_complete.html'

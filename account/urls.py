@@ -6,6 +6,9 @@ from django.contrib.auth.views import (
 )
 from . import views
 from .views import (
+    CustomPasswordResetDoneView,
+    CustomPasswordResetConfirmView,
+    CustomPasswordResetCompleteView,
     CustomLogoutView,
     CustomPasswordChangeView,
     CustomPasswordChangeDoneView,
@@ -40,12 +43,32 @@ urlpatterns = [
         CustomPasswordChangeDoneView.as_view(),
         name='password_change_done'
     ),
+path(
+      'password_reset/',
+      CustomPasswordResetView.as_view(),
+      name='password_reset'
+    ),
 
+    # “check your inbox” page
     path(
-        'password_reset/',
-        CustomPasswordResetView.as_view(),
-        name='password_reset'
-    ),  # This includes the default password reset URLs)
+      'password_reset/done/',
+      CustomPasswordResetDoneView.as_view(),
+      name='password_reset_done'
+    ),
+
+    # the link you click in the email
+    path(
+      'reset/<uidb64>/<token>/',
+      CustomPasswordResetConfirmView.as_view(),
+      name='password_reset_confirm'
+    ),
+
+    # final “your password’s been set” page
+    path(
+      'reset/done/',
+      CustomPasswordResetCompleteView.as_view(),
+      name='password_reset_complete'
+    ),
 
     # —– the rest of Django’s auth URLs (reset, etc.) —–
     path('', include('django.contrib.auth.urls')),
