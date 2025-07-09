@@ -70,7 +70,7 @@ path(
       name='password_reset_complete'
     ),
 
-    # —– the rest of Django’s auth URLs (reset, etc.) —–
+    # —– the rest of the URLs (reset, etc.) —–
     path('', include('django.contrib.auth.urls')),
 
     # —– custom views —–
