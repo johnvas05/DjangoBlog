@@ -73,7 +73,7 @@ ROOT_URLCONF = 'myblog.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'], # This tells Django to look in myblog/templates/
+        'DIRS': [BASE_DIR / 'theme' / 'templates', BASE_DIR / 'templates'], #both tailwind and custom templates
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

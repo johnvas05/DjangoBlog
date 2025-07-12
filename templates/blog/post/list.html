@@ -1,5 +1,8 @@
+{% extends "base.html" %}
+
 <h1>All Posts</h1>
 
+{% block content %}
 {% if user.is_authenticated %}
   <p>Welcome, {{ user.username }}!</p>
     <a href="{% url 'account:dashboard' %}" class="button">Dashboard</a>
@@ -20,3 +23,4 @@
   </p>
   {{ post.body|linebreaks }}
 {% endfor %}
+{% endblock %}
