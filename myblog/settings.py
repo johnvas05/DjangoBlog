@@ -51,7 +51,12 @@ INSTALLED_APPS = [
     'blog.apps.BlogConfig',
     'taggit',
     'account',
+    'tailwind',
+    'theme', #tailwind theme app
 ]
+
+TAILWIND_APP_NAME = 'theme'
+NPM_BIN_PATH = r"C:\Program Files\nodejs\npm.cmd"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
