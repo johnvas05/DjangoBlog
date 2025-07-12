@@ -6,12 +6,12 @@
 {% if user.is_authenticated %}
   <p>Welcome, {{ user.username }}!</p>
     <a href="{% url 'account:dashboard' %}" class="button">Dashboard</a>
-  <form method="post" action="/{% url 'account:logout' %}" style="display:inline;">
+  <form method="post" action="{% url 'account:logout' %}">
     {% csrf_token %}
-    <button type="submit">Logout</button>
+    <button type="submit" class="text-red-600 hover:underline">Logout</button>
 </form>
-{% else %}
-  <a href="{% url 'account:login' %}">Login</a>
+
+
 {% endif %}
 
 {% for post in posts %}
