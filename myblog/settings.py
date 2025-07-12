@@ -30,7 +30,9 @@ DEBUG = config('DEBUG', default=True, cast=bool)
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='127.0.0.1,localhost').split(',')
 
 #email settings for development
-EMAIL_BACKEND = config('EMAIL_BACKEND', default='django.core.mail.backends.console.EmailBackend')
+# Send emails to the console in development
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
 EMAIL_HOST = config('EMAIL_HOST', default='') # Not strictly needed for console backend
 EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int) # Not strictly needed for console backend
 EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool) # Not strictly needed for console backend
@@ -103,6 +105,8 @@ DATABASES = {
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
+
+AUTH_USER_MODEL = 'account.CustomUser'
 
 AUTH_PASSWORD_VALIDATORS = [
     {
