@@ -1,50 +1,111 @@
 {% extends "base.html" %}
-
 {% block title %}{{ post.title }}{% endblock %}
 
 {% block content %}
-    <h1>{{ post.title }}</h1>
-    <p class="date">
-        Published {{ post.publish|date:"F d, Y" }} by {{ post.author }}
+<article class="max-w-3xl mx-auto mt-8 bg-white rounded-2xl shadow-lg overflow-hidden">
+  <header class="px-6 py-8 border-b">
+    <h1 class="text-4xl font-extrabold text-gray-800">{{ post.title }}</h1>
+    <p class="mt-2 text-sm text-gray-500">
+      Published {{ post.publish|date:"F d, Y" }} by <span class="font-medium">{{ post.author }}</span>
     </p>
+  </header>
+
+  <div class="prose prose-lg px-6 py-8">
     {{ post.body|linebreaks }}
+  </div>
 
-    <p class="post-share">
-        <a href="{% url 'blog:post_share' post.id %}">
-            Share this post by email
-        </a>
-    </p>
+  {% if post.tags.all %}
+    <div class="px-6 pb-6">
+      <h4 class="font-semibold text-gray-700 mb-2">Tags:</h4>
+      <div class="flex flex-wrap gap-2">
+        {% for tag in post.tags.all %}
+          <a href="{% url 'blog:post_list_by_tag' tag.slug %}"
+             class="text-sm bg-blue-100 text-blue-800 px-3 py-1 rounded-full hover:bg-blue-200 transition">
+            {{ tag.name }}
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+</article>
 
-    {# Display tags #}
-    {% if post.tags.all %}
-        <p>
-            Tags:
-            {% for tag in post.tags.all %}
-                <a href="{% url 'blog:post_list_by_tag' tag.slug %}">{{ tag.name }}</a>{% if not forloop.last %}, {% endif %}
-            {% endfor %}
-        </p>
+<section class="max-w-3xl mx-auto mt-12">
+  <h2 class="text-2xl font-bold text-gray-800 mb-4">{{ comments.count }} Comment{{ comments.count|pluralize }}</h2>
+  {% for comment in comments %}
+    <div class="bg-gray-50 p-6 rounded-xl shadow-inner mb-6">
+      <p class="text-sm text-gray-500 mb-1">
+        <span class="font-medium">{{ comment.name }}</span> — {{ comment.created|date:"M d, Y" }}
+      </p>
+      <div class="prose">
+        {{ comment.body|linebreaks }}
+      </div>
+    </div>
+  {% empty %}
+    <p class="text-gray-600">There are no comments yet.</p>
+  {% endfor %}
+</section>
+
+<section class="max-w-3xl mx-auto mt-12 bg-white rounded-2xl shadow-lg p-8">
+  <h3 class="text-xl font-semibold text-gray-800 mb-6">Add a new comment</h3>
+  <form action="{% url 'blog:post_comment' post.id %}" method="post" class="space-y-6">
+    {% csrf_token %}
+
+    {% if user.is_authenticated %}
+      {# Pre-fill name and email for logged-in users #}
+      <input type="hidden" name="name" value="{{ user.get_full_name|default:user.username }}">
+      <input type="hidden" name="email" value="{{ user.email }}">
+    {% else %}
+      <div>
+        <label for="id_name" class="block text-gray-700 mb-1">Name</label>
+        <input
+          type="text"
+          name="name"
+          id="id_name"
+          value="{{ form.name.value|default_if_none:'' }}"
+          required
+          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        {% if form.name.errors %}
+          <p class="mt-1 text-red-600 text-sm">{{ form.name.errors.0 }}</p>
+        {% endif %}
+      </div>
+
+      <div>
+        <label for="id_email" class="block text-gray-700 mb-1">Email</label>
+        <input
+          type="email"
+          name="email"
+          id="id_email"
+          value="{{ form.email.value|default_if_none:'' }}"
+          required
+          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        {% if form.email.errors %}
+          <p class="mt-1 text-red-600 text-sm">{{ form.email.errors.0 }}</p>
+        {% endif %}
+      </div>
     {% endif %}
 
-    <h2>Comments</h2>
-    {% with comments.count as total_comments %}
-        <h3>
-            {{ total_comments }} comment{{ total_comments|pluralize }}
-        </h3>
-    {% endwith %}
+    <div>
+      <label for="id_body" class="block text-gray-700 mb-1">Comment</label>
+      <textarea
+        name="body"
+        id="id_body"
+        rows="4"
+        required
+        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+      >{{ form.body.value|default_if_none:'' }}</textarea>
+      {% if form.body.errors %}
+        <p class="mt-1 text-red-600 text-sm">{{ form.body.errors.0 }}</p>
+      {% endif %}
+    </div>
 
-    {% for comment in comments %}
-        <div class="comment">
-            <p class="info">
-                Comment by {{ comment.name }}
-                {{ comment.created|date:"M d, Y" }}
-            </p>
-            {{ comment.body|linebreaks }}
-        </div>
-    {% empty %}
-        <p>There are no comments yet.</p>
-    {% endfor %}
-
-    <h3>Add a new comment</h3>
-    {% include 'blog/post/comment_form.html' with form=form post=post %}
-
+    <button
+      type="submit"
+      class="bg-green-600 text-white font-semibold py-2 px-6 rounded-lg shadow hover:shadow-lg transition-transform transform hover:-translate-y-0.5"
+    >
+      Add Comment
+    </button>
+  </form>
+</section>
 {% endblock %}

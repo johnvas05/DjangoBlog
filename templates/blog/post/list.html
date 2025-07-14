@@ -1,26 +1,30 @@
 {% extends "base.html" %}
-
-<h1>All Posts</h1>
+{% block title %}All Posts{% endblock %}
 
 {% block content %}
-{% if user.is_authenticated %}
-  <p>Welcome, {{ user.username }}!</p>
-    <a href="{% url 'account:dashboard' %}" class="button">Dashboard</a>
-  <form method="post" action="{% url 'account:logout' %}">
-    {% csrf_token %}
-    <button type="submit" class="text-red-600 hover:underline">Logout</button>
-</form>
+<div class="max-w-4xl mx-auto mt-8 space-y-8">
+  <h1 class="text-3xl font-bold text-gray-800">All Posts</h1>
 
+  {% for post in posts %}
+    <article class="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-lg transition p-6">
+      <header class="mb-4">
+        <h2 class="text-2xl font-semibold text-blue-600 hover:text-blue-800">
+          <a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+        </h2>
+        <p class="mt-1 text-sm text-gray-500">
+          Published {{ post.publish|date:"F j, Y, g:i a" }} by {{ post.author }}
+        </p>
+      </header>
 
-{% endif %}
+      <div class="prose prose-sm text-gray-700 mb-4">
+        {{ post.body|truncatechars_html:200 }}
+      </div>
 
-{% for post in posts %}
-  <h2>
-    <a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
-  </h2>
-  <p class="date">
-    Published {{ post.publish|date:"F j, Y, g:i a" }} by {{ post.author }}
-  </p>
-  {{ post.body|linebreaks }}
-{% endfor %}
+      <a href="{{ post.get_absolute_url }}"
+         class="inline-block text-sm font-medium text-green-600 hover:underline">
+        Read more →
+      </a>
+    </article>
+  {% endfor %}
+</div>
 {% endblock %}
