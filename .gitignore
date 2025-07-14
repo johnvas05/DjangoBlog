@@ -1,0 +1,32 @@
+# Python/Django
+*.pyc
+__pycache__/
+*.sqlite3
+*.env
+.env
+.venv/
+venv/
+*.log
+local_settings.py
+migrations/
+
+# Node.js/JavaScript
+node_modules/
+npm-debug.log
+dist/
+build/
+*.tmp
+*.cache
+
+# Tailwind CSS (if applicable)
+static/css/output.css  # Only ignore if generated during build
+
+# IDE/Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*.DS_Store
+
+# macOS
+.DS_Store
