@@ -3,6 +3,7 @@ from django.conf import settings
 from django.utils import timezone
 from django.urls import reverse
 from taggit.managers import TaggableManager
+from django.utils.text import slugify
 
 class Post(models.Model):
     class Status(models.TextChoices):
@@ -11,7 +12,6 @@ class Post(models.Model):
 
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     title = models.CharField(max_length=250)
-    slug = models.SlugField(max_length=250, unique_for_date='publish')
     body = models.TextField()
     publish = models.DateTimeField(default=timezone.now)
     created = models.DateTimeField(auto_now_add=True)
@@ -25,6 +25,7 @@ class Post(models.Model):
         return self.title
 
     def get_absolute_url(self):
+        local_pub = timezone.localtime(self.publish) #converts utc time to local
         return reverse(
             'blog:post_detail',
             args=[
@@ -35,6 +36,12 @@ class Post(models.Model):
             ]
         )
 
+    slug = models.SlugField(max_length=250, unique_for_date='publish', blank=True)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)
+        super().save(*args, **kwargs)
 
 
 

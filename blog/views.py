@@ -1,13 +1,14 @@
 from django.shortcuts import render, get_object_or_404
 from .models import Post, Comment # Ensure Comment is imported
-from .forms import EmailPostForm, CommentForm # Ensure CommentForm is imported
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from .forms import EmailPostForm, CommentForm, PostForm # Ensure CommentForm is imported
 from django.core.mail import send_mail
 from django.conf import settings
 from django.views.decorators.http import require_POST
-from django.shortcuts import redirect # Add this import for redirect
 from taggit.models import Tag
-
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.contrib.auth.decorators import login_required
+from django.utils import timezone
+from django.shortcuts import redirect
 def post_list(request, tag_slug=None):
     object_list = Post.objects.filter(status=Post.Status.PUBLISHED)
     tag = None
@@ -15,23 +16,13 @@ def post_list(request, tag_slug=None):
         tag = get_object_or_404(Tag, slug=tag_slug)
         object_list = object_list.filter(tags__in=[tag])
 
-    paginator = Paginator(object_list, 3)
-    page_number = request.GET.get('page', 1)
-
-    try:
-        posts = paginator.page(page_number) # Get the Page object for the requested page
-    except PageNotAnInteger:
-        # If page_number is not an integer, deliver the first page.
-        posts = paginator.page(1)
-    except EmptyPage:
-        # If page_number is out of range (e.g., 9999), deliver last page of results.
-        posts = paginator.page(paginator.num_pages)
+    paginator = Paginator(object_list, 3)  # 3 posts per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)  # Handles invalid page numbers automatically
 
     return render(request,
-                  template_name='blog/post/list.html', # Note the path 'blog/post/list.html'
-                  context={'posts': posts,
-                           'page_obj': posts,
-                           'tag': tag})
+                 'blog/post/list.html',
+                 {'page_obj': page_obj, 'tag': tag})
 
 def post_detail(request, year, month, day, post):
     post = get_object_or_404(
@@ -40,7 +31,7 @@ def post_detail(request, year, month, day, post):
         publish__month=month,
         publish__day=day,
         slug=post,
-        status=Post.Status.PUBLISHED # <--- CHANGE THIS LINE!
+        status=Post.Status.PUBLISHED
     )
     # List of active comments for this post
     comments = post.comments.filter(active=True)
@@ -105,3 +96,29 @@ def post_share(request, post_id):
         form = EmailPostForm() # Initialize an empty form for GET requests
 
     return render(request, 'blog/post/share.html', {'post': post, 'form': form, 'sent': sent})
+
+
+@login_required
+def post_create(request):
+    if request.method == 'POST':
+        form = PostForm(request.POST)
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.author = request.user
+            post.publish = timezone.now()  # Set publish time
+
+            # Check if we're publishing (default) or saving as draft
+            if 'save_as_draft' in request.POST:
+                post.status = Post.Status.DRAFT
+            else:
+                post.status = Post.Status.PUBLISHED
+
+            post.save()
+            form.save_m2m()  # Save tags
+            return redirect('blog:post_list')
+    else:
+        # Default to PUBLISHED status for new posts
+        form = PostForm(initial={'status': Post.Status.PUBLISHED})
+
+    return render(request, 'blog/post/create_post.html', {'form': form})
+
